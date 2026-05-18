@@ -1,101 +1,178 @@
-# Soroban Project
-Aplikasi desentralisasi (DApp) berbasis smart contract untuk sistem pemungutan suara (voting) yang transparan, aman, dan tanpa perantara, dibangun di atas jaringan Stellar menggunakan Soroban.
+# Stellar Voting DApp
 
-## ✨ Fitur Utama
-- **Manajemen Kandidat**: Admin memiliki otorisasi untuk melakukan pendaftaran kandidat di dalam sistem (lengkap dengan ID, Nama, dan perhitungan suara).
-- **Kontrol Periode Voting**: Admin dapat membuka atau menutup sesi pemungutan suara sesuai dengan jadwal.
-- **Satu Pemilih, Satu Suara**: Menggunakan `Address` identitas dari Stellar untuk melacak status `Voted` sehingga memastikan setiap pemilih hanya dapat memberikan suaranya satu kali (mencegah *double-voting* atau *sybil attack*).
-- **Transparan & On-Chain**: Seluruh proses perhitungan suara dan data yang tersimpan berjalan secara terbuka serta *immutable* di atas jaringan blockchain.
+A simple decentralized voting application built on **Stellar Soroban**.  
+This project allows users to vote for candidates using their Stellar wallet address as their identity.
 
-## 🚀 Teknologi yang Digunakan
-- **Bahasa Pemrograman**: [Rust](https://www.rust-lang.org/) (dengan lingkungan `#![no_std]`)
-- **Smart Contract Platform**: [Soroban SDK](https://soroban.stellar.org/)
-- **Blockchain**: Stellar Network
+## Smart Contract
 
-## 📋 Prasyarat Instalasi
-Sebelum menjalankan atau meng-compile proyek ini, pastikan Anda telah menyiapkan beberapa alat pengembangan berikut:
-1. **Rust & Cargo**: Instal melalui [rustup](https://rustup.rs/).
-2. **Target WebAssembly**: Tambahkan target kompilasi WebAssembly (WASM) dengan menjalankan:
-
-```
+**Network:** Stellar Testnet  
+**Contract ID:**
 
 ```text
-File README.md generated successfully.
-
-```bash
-   rustup target add wasm32-unknown-unknown
-
+CC7VUYKPHXMVZRO5MTJDI57P57OQTEKLXO2ETVOHVHRMWPUE47U32OPK
 ```
 
-3. **Soroban CLI**: Alat antarmuka baris perintah (CLI) untuk berinteraksi dengan kontrak Soroban.
-```bash
-cargo install --locked soroban-cli
+## Project Description
 
-```
+Stellar Voting DApp is a simple Web3 voting application where an admin can create candidates and users can vote for one candidate.  
+Each wallet address can only vote once, making the voting process more transparent and preventing duplicate votes from the same wallet.
 
-## 📂 Susunan Project
+The voting data is stored on-chain using a Soroban smart contract, so the result can be checked publicly on the Stellar testnet.
 
-Struktur proyek ini mengikuti standar Cargo Workspace untuk proyek Soroban:
+## Main Features
+
+- Initialize the voting contract with an admin address
+- Add candidates to the voting list
+- Vote for a candidate using a Stellar wallet
+- Prevent the same wallet from voting more than once
+- View all candidates and their vote counts
+- Check whether a wallet has already voted
+- Open or close the voting process by admin
+- View the current voting status
+- View the admin address
+
+## Contract Functions
+
+### `initialize(admin: Address)`
+
+Initializes the contract and sets the admin address.
+
+### `add_candidate(admin: Address, name: String)`
+
+Adds a new candidate to the voting list.  
+Only the admin can call this function.
+
+### `vote(voter: Address, candidate_id: u32)`
+
+Allows a voter to vote for a candidate.  
+Each voter address can only vote once.
+
+### `get_candidates()`
+
+Returns the list of all candidates and their vote counts.
+
+### `get_candidate(candidate_id: u32)`
+
+Returns a specific candidate by candidate ID.
+
+### `has_voted(voter: Address)`
+
+Checks whether a wallet address has already voted.
+
+### `set_voting_open(admin: Address, is_open: bool)`
+
+Opens or closes the voting process.  
+Only the admin can call this function.
+
+### `is_voting_open()`
+
+Returns the current voting status.
+
+### `get_admin()`
+
+Returns the admin address of the contract.
+
+## How It Works
+
+1. The admin initializes the contract.
+2. The admin adds candidates.
+3. A user connects their Stellar wallet.
+4. The user selects a candidate.
+5. The user submits a vote transaction.
+6. The smart contract checks whether:
+   - Voting is still open
+   - The voter has not voted before
+   - The selected candidate exists
+7. The vote count is updated on-chain.
+
+## Example Usage
+
+### Initialize Contract
 
 ```text
-soroban-voting-dapp/
-├── Cargo.toml               # Konfigurasi workspace Cargo
-├── README.md                # Dokumentasi utama proyek
-└── contracts/
-    └── hello-world/         # Direktori modul smart contract
-        ├── Cargo.toml       # Dependensi spesifik contract
-        ├── Makefile         # Kumpulan script utilitas untuk proses build & test
-        └── src/
-            ├── lib.rs       # Logika utama (state, struct Candidate, inisialisasi)
-            └── test.rs      # Skenario pengujian (unit testing)
-
+initialize(admin)
 ```
 
-## 💻 Contoh Penggunaan
+### Add Candidates
 
-### 1. Build Smart Contract
-
-Jalankan perintah berikut pada direktori *root* untuk mengkompilasi *smart contract* menjadi *file* `.wasm`:
-
-```bash
-cargo build --target wasm32-unknown-unknown --release
-
+```text
+add_candidate(admin, "Alice")
+add_candidate(admin, "Bob")
+add_candidate(admin, "Charlie")
 ```
 
-### 2. Menjalankan Unit Test
+### Vote
 
-Pastikan seluruh fungsi, termasuk validasi *auth* dan perhitungan suara, berjalan mulus melalui perintah *test*:
-
-```bash
-cargo test
-
+```text
+vote(voter, 0)
 ```
 
-### 3. Deploy & Interaksi
+In this example, `0` is the candidate ID for the first candidate.
 
-Dengan Soroban CLI, Anda dapat langsung memasang dan menginisialisasi *smart contract* ini:
+### Get Voting Result
 
-```bash
-# 1. Melakukan Deploy contract ke jaringan
-soroban contract deploy --wasm target/wasm32-unknown-unknown/release/hello_world.wasm
-
-# 2. Inisialisasi contract (menentukan akun Admin)
-soroban contract invoke \\
-    --id <CONTRACT_ID> \\
-    -- \\
-    initialize \\
-    --admin <ADMIN_ADDRESS>
-
+```text
+get_candidates()
 ```
 
-## 🤝 Kontribusi
+## Technology Used
 
-Kami sangat mengapresiasi kontribusi untuk memperkaya fitur aplikasi DApp ini!
+- Stellar Soroban
+- Rust
+- Soroban SDK
+- Stellar Testnet
+- Stellar Lab
+- Soroban Studio
 
-1. Lakukan **Fork** pada repositori.
-2. Buat *branch* fitur Anda (`git checkout -b fitur-keren-anda`).
-3. Lakukan *commit* pada perubahan Anda (`git commit -m 'Menambahkan fitur keren'`).
-4. *Push* ke *branch* repositori asal (`git push origin fitur-keren-anda`).
-5. Ajukan **Pull Request** baru untuk kami tinjau.
+## Folder Structure
 
-Bila Anda menemukan kendala teknis atau punya saran pengembangan, silakan sampaikan lewat fitur **Issues** di GitHub.
+```text
+contracts/
+└── hello-world/
+    ├── src/
+    │   ├── lib.rs
+    │   └── test.rs
+    └── Cargo.toml
+```
+
+## Smart Contract Storage
+
+The contract stores several types of data:
+
+- `Admin` - stores the admin wallet address
+- `VotingOpen` - stores whether voting is open or closed
+- `Candidates` - stores all candidates and their vote counts
+- `Voted(Address)` - stores whether a wallet has already voted
+
+## Security Notes
+
+- Only the admin can add candidates.
+- Only the admin can open or close voting.
+- A voter must authorize the transaction using their wallet.
+- A wallet address can only vote once.
+- Votes are stored on-chain and can be verified publicly.
+
+## Deployment
+
+The contract has been deployed to Stellar Testnet.
+
+**Contract ID:**
+
+```text
+CC7VUYKPHXMVZRO5MTJDI57P57OQTEKLXO2ETVOHVHRMWPUE47U32OPK
+```
+
+You can inspect and invoke the contract using Stellar Lab on the testnet network.
+
+## Future Improvements
+
+- Build a frontend interface for easier voting
+- Add wallet connection support
+- Display live voting results
+- Add a candidate image or description
+- Add event name and voting deadline
+- Add better admin dashboard
+
+## Author
+
+Created as a simple Web3 project submission using Stellar Soroban.
