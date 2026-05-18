@@ -99,7 +99,3 @@ Kami sangat mengapresiasi kontribusi untuk memperkaya fitur aplikasi DApp ini!
 5. Ajukan **Pull Request** baru untuk kami tinjau.
 
 Bila Anda menemukan kendala teknis atau punya saran pengembangan, silakan sampaikan lewat fitur **Issues** di GitHub.
-
-```
-
-```
